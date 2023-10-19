@@ -1,0 +1,83 @@
+Como listar todos os medicamentos que estão com a validade próxima de vencer, ou seja, antes de 30 dias a partir de hoje?
+
+SELECT * FROM medicamentos
+WHERE validade <= DATE_ADD(CURDATE(), INTERVAL 30 DAY);
+
+Como listar o nome de todos os pacientes e a quantidade de consultas que realizaram, incluindo aqueles que não realizaram consultas?
+
+SELECT p.nome AS Nome_Paciente, COUNT(c.id) AS Quantidade_de_Consultas
+FROM pacientes p
+LEFT JOIN consultas c ON p.id = c.paciente_id
+GROUP BY p.id;
+
+Qual comando SELECT deve ser usado para contar o total de exames solicitados por consulta, agrupados pelo ID da consulta?
+
+SELECT consulta_id, COUNT(exame_id) AS Total_Exames_Solicitados
+FROM consultas_exames
+GROUP BY consulta_id;
+
+Como listar todos os exames que foram solicitados mais de uma vez?
+
+SELECT exame_id, COUNT(exame_id) AS Total_Solicitacoes
+FROM consultas_exames
+GROUP BY exame_id
+HAVING Total_Solicitacoes > 1;
+
+Como exibir a quantidade total de medicamentos prescritos para cada paciente, identificado pelo nome?
+
+SELECT p.nome AS Nome_Paciente, SUM(rm.quantidade) AS Total_Medicamentos_Prescritos
+FROM pacientes p
+LEFT JOIN consultas c ON p.id = c.paciente_id
+LEFT JOIN receitas_medicas rm ON c.id = rm.consulta_id
+GROUP BY p.id;
+
+Qual comando SQL mostra a quantidade total de consultas realizadas por cada médico, identificado pelo nome?
+
+SELECT m.nome AS Nome_Medico, COUNT(c.id) AS Total_Consultas
+FROM medicos m
+LEFT JOIN consultas c ON m.id = c.medico_id
+GROUP BY m.id;
+
+Como listar todos os médicos que realizaram consultas no dia 15 de março de 2023?
+
+SELECT DISTINCT m.nome AS Nome_Medico
+FROM medicos m
+INNER JOIN consultas c ON m.id = c.medico_id
+WHERE DATE(c.data_hora) = '2023-03-15';
+
+Qual comando SELECT deve ser usado para listar o nome do paciente e o total de exames solicitados em suas consultas?
+
+SELECT p.nome AS Nome_Paciente, COUNT(ce.exame_id) AS Total_Exames_Solicitados
+FROM pacientes p
+LEFT JOIN consultas c ON p.id = c.paciente_id
+LEFT JOIN consultas_exames ce ON c.id = ce.consulta_id
+GROUP BY p.id;
+
+Como listar todos os médicos e suas especialidades, ordenados por nome?
+
+SELECT nome, especialidade
+FROM medicos
+ORDER BY nome;
+
+Qual comando SELECT deve ser usado para contar a quantidade de consultas realizadas por cada médico, agrupadas por especialidade?
+
+SELECT m.especialidade, COUNT(c.id) AS Total_Consultas
+FROM medicos m
+LEFT JOIN consultas c ON m.id = c.medico_id
+GROUP BY m.especialidade;
+
+Como listar todos os pacientes que passaram por consultas com médicos de uma especialidade específica, por exemplo, "Pediatra"?
+
+SELECT p.nome AS Nome_Paciente
+FROM pacientes p
+INNER JOIN consultas c ON p.id = c.paciente_id
+INNER JOIN medicos m ON c.medico_id = m.id
+WHERE m.especialidade = 'Pediatra';
+
+Como listar todas as consultas realizadas por um médico específico, utilizando o ID do médico como filtro, ordenadas pela data e hora da consulta?
+
+SELECT c.id AS Consulta_ID, p.nome AS Nome_Paciente, c.data_hora AS Data_Hora_Consulta
+FROM consultas c
+INNER JOIN pacientes p ON c.paciente_id = p.id
+WHERE c.medico_id = 1
+ORDER BY c.data_hora;
